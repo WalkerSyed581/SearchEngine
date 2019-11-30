@@ -3,10 +3,19 @@ import os
 import json
 from misc_functions import filter_and_tokenize_file
 
+def readForwardIndex():
+    with open("../Data/forwardIndex.json","r",encoding='utf-8') as forwardIndexFile:
+       lexicon = json.loads(forwardIndexFile.read())
+
+    return lexicon
+
 def buildHitlist(word,document_tokens):
 
     positions = [i for i, x in enumerate(document_tokens) if x == word]
     count = len(positions)
+
+    
+        
 
     hitlist = {"positions": positions,"count" : count}
 
@@ -19,7 +28,7 @@ def parseDocument(document_path,lexicon):
     for token in filtered_tokens:
         wordID = lexicon[token]
         hitlist = buildHitlist(token,filtered_tokens)
-        document_hits[wordID] =  hitlist 
+        document_hits[wordID] =  hitlist
 
     return document_hits
 
