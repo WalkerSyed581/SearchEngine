@@ -3,6 +3,12 @@ import json
 from misc_functions import filter_and_tokenize_file
 
 
+def read_lexicon():
+    with open("../Data/lexicon.json","r",encoding='utf-8') as lexFile:
+       lexicon = json.loads(lexFile.read())
+
+    return lexicon
+
 
 
 def build_lexicon():
@@ -24,6 +30,8 @@ def build_lexicon():
         index += 1
 
     with open("../Data/lexicon.json","w+",encoding='utf-8') as lex:
-        json.dump(lexiconb,lex)
+        json.dump(lexiconf,lex)
+
+
 
     

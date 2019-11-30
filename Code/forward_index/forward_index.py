@@ -1,37 +1,38 @@
 import nltk
+import os
+import json
+from misc_functions import filter_and_tokenize_file
 
-def buildHitlist(word,document_text):
+def buildHitlist(word,document_tokens):
+
+    positions = [i for i, x in enumerate(document_tokens) if x == word]
+    count = len(positions)
+
+    hitlist = {"positions": positions,"count" : count}
+
+    return hitlist
 
 def parseDocument(document_path,lexicon):
-    text = ""
-    with open(path,"r",encoding='utf8') as f:
-        data = json.loads(f.read())
-        text += " " + data["text"]
-    
-    tokens = nltk.regexp_tokenize(text,r'\w+')
-    tagged = nltk.pos_tag(tokens)
+    document_hits = dict()
+    filtered_tokens = filter_and_tokenize_file(document_path)
 
-    for i in range(0,len(tokens) - 1):
-        if(tagged[i][1] == "IN"):
-            tokens.remove(tagged[i][0])
+    for token in filtered_tokens:
+        wordID = lexicon[token]
+        hitlist = buildHitlist(token,filtered_tokens)
+        document_hits[wordID] =  hitlist 
 
-    for token in tokens:
-        token.lower()
-        if len(token) == 1 or token.isdigit():
-            tokens.remove(token) 
+    return document_hits
 
-    for token in tokens:
-        hitlist = buildHitlist(token,tokens)
-         
-    
-
-
-
-def buildForward_Index(datapath,lexicon):
+def buildForwardIndex(datapath,lexicon):
+    docID = 0
+    forwardIndex = dict()
     for (root,_,files) in os.walk(datapath):
         for file in files:
-            dataOfOneDoc = parseDocument(os.path.abspath(os.path.join(root,file)),lexicon)
-            
+            forwardIndex[str(docID)] = parseDocument(os.path.abspath(os.path.join(root,file)),lexicon)
+            docID += 1
+
+    with open("../Data/forwardIndex.json","w+",encoding='utf-8') as forwardIndexFile:
+        json.dump(forwardIndex,forwardIndexFile)
 
 
 
