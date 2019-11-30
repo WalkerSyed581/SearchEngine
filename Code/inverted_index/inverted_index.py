@@ -12,7 +12,7 @@ def numberOfDocuments(wordID,forwardIndex):
     for key,value in forwardIndex.items():
         if value.get(wordID) != None:
             positions.append(key)
-
+    
     return positions
 
 

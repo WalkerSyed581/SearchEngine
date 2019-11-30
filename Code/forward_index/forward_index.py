@@ -2,10 +2,13 @@ import nltk
 import os
 import json
 from misc_functions import filter_and_tokenize_file
+from misc_functions import generateDocIDs
+import lexicon.lexicon
+from lexicon.lexicon import read_lexicon
 
 def readForwardIndex():
     with open("../Data/forwardIndex.json","r",encoding='utf-8') as forwardIndexFile:
-       lexicon = json.loads(forwardIndexFile.read())
+       lexicon = json.load(forwardIndexFile)
 
     return lexicon
 
@@ -32,16 +35,25 @@ def parseDocument(document_path,lexicon):
 
     return document_hits
 
-def buildForwardIndex(datapath,lexicon):
-    docID = 0
-    forwardIndex = dict()
+def buildForwardIndex(datapath):
+    docIndex = generateDocIDs()
+    lexicon = build_lexicon()
+    try:
+        forwardIndex = readForwardIndex()
+    except (FileNotFoundError, IOError):
+        forwardIndex = dict()\
+
     for (root,_,files) in os.walk(datapath):
         for file in files:
-            forwardIndex[str(docID)] = parseDocument(os.path.abspath(os.path.join(root,file)),lexicon)
-            docID += 1
+            docID = str(docIndex[file])
+            if(forwardIndex.get(docID) == None):
+                path = os.path.abspath(os.path.join(root,file))
+                forwardIndex[file] = parseDocument(path,lexicon)
 
     with open("../Data/forwardIndex.json","w+",encoding='utf-8') as forwardIndexFile:
         json.dump(forwardIndex,forwardIndexFile)
+
+    return forwardIndex
 
 
 
