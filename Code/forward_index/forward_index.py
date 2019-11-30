@@ -4,7 +4,7 @@ import json
 from misc_functions import filter_and_tokenize_file
 from misc_functions import generateDocIDs
 import lexicon.lexicon
-from lexicon.lexicon import read_lexicon
+from lexicon.lexicon import build_lexicon
 
 def readForwardIndex():
     with open("../Data/forwardIndex.json","r",encoding='utf-8') as forwardIndexFile:
@@ -45,15 +45,21 @@ def buildForwardIndex(datapath):
 
     for (root,_,files) in os.walk(datapath):
         for file in files:
-            docID = str(docIndex[file])
-            if(forwardIndex.get(docID) == None):
+            docID = str(docIndex[os.path.join(root,file)])
+            if forwardIndex.get(docID) == None:
                 path = os.path.abspath(os.path.join(root,file))
-                forwardIndex[file] = parseDocument(path,lexicon)
+                forwardIndex[docID] = parseDocument(path,lexicon)
 
     with open("../Data/forwardIndex.json","w+",encoding='utf-8') as forwardIndexFile:
         json.dump(forwardIndex,forwardIndexFile)
 
     return forwardIndex
+
+def clearDocs():
+    os.remove("../Data/forwardIndex.json")
+    os.remove("../Data/invertedIndex.json")
+    os.remove("../Data/lexicon.json")
+    os.remove("../Data/documentIndex.json")
 
 
 

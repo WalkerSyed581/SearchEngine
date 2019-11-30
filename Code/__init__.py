@@ -7,4 +7,6 @@ import inverted_index.inverted_index
 from inverted_index.inverted_index import buildInvertedIndex
 
 if __name__ == "__main__":
+    lexicon = build_lexicon()
+    buildForwardIndex('../Data/sample_data')
     buildInvertedIndex()

@@ -31,7 +31,7 @@ def build_lexicon():
 
 
     for word in words:
-        if(lexiconf.get(word) == None)
+        if lexiconf.get(word) == None:
             lexiconf[word] = len(lexiconf)
 
     with open("../Data/lexicon.json","w+",encoding='utf-8') as lex:

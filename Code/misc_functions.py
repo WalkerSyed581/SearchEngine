@@ -1,5 +1,6 @@
 import json
 import nltk
+import os
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 
@@ -28,8 +29,8 @@ def generateDocIDs():
 
     for (root,_,files) in os.walk('../Data/sample_data'):
         for file in files:
-            if(docIndex.get(file) == None):
-                docIndex[file] = str(len(docIndex) + 1)
+            if docIndex.get(file) == None:
+                docIndex[os.path.join(root,file)] = str(len(docIndex))
                 with open("../Data/documentIndex.json","w+",encoding='utf-8') as documentIndexFile:
                     json.dump(docIndex,documentIndexFile)     
 
@@ -37,6 +38,6 @@ def generateDocIDs():
 
 def readDocIDs():
     with open("../Data/documentIndex.json","r",encoding='utf-8') as documentIndexFile:
-       docIndex = json(documentIndexFile)
+       docIndex = json.load(documentIndexFile)
 
     return docIndex
