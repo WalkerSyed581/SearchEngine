@@ -43,6 +43,7 @@ def buildLexicon(docIndex):
                 docID = str(docIndex[path])
                 if docID not in isIndexed:
                     # The function being called reads, tokenizes and stems the tokens along with other filters
+                    # It goes through both the title and the text of the specific document
                     filtered_tokens += filter_and_tokenize_file(file)
                     filtered_tokens += filter_and_tokenize_file(file,True)
     

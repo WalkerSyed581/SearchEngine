@@ -15,7 +15,7 @@ from config import *
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 
-
+# Tokenizing just the string or word itself at first
 def tokenizeString(words):
     lemmatizer = WordNetLemmatizer()
     ps = PorterStemmer()
@@ -46,9 +46,11 @@ def filter_and_tokenize_file(file,titleRequired=False,rank=False):
     lemmatizer = WordNetLemmatizer()
     ps = PorterStemmer()
 
+    # Returning the rank of the document if required
     if rank == True:
         return data["thread"]["domain_rank"]
 
+    # Checking if the title tokens were asked for
     if titleRequired == True:
         # Creating tokens and excluding punctuations
         tokens = nltk.regexp_tokenize(title,r'\w+')
@@ -58,6 +60,7 @@ def filter_and_tokenize_file(file,titleRequired=False,rank=False):
 
         return filtered_tokens
     
+    # Returning the text tokens if nothing was specified
     else:     
         tokens = nltk.regexp_tokenize(text,r'\w+')
 
@@ -72,13 +75,14 @@ def filter_and_tokenize_file(file,titleRequired=False,rank=False):
 # The following function generates the DocIDs for all of files in the dataset
 #
 def generateDocIDs():
-    # Retrieving the DocID file if ti already exists
+    # Retrieving the DocID file if it already exists
     try:
         docIndex = readDocIDs()
     except (FileNotFoundError, IOError):
         docIndex = dict()
 
 
+    # Going through the files and storing the docIDs
     for (_,_,files) in os.walk(DATA_PATH):
         for file in files:
             path = os.path.join(DATA_PATH,file)
@@ -98,13 +102,14 @@ def generateDocIDs():
 # Function to read the document index
 #
 def readDocIDs():
+    # Reading the documentIndex.json file
     with open(DOC_INDEX_PATH,"r",encoding='utf-8') as documentIndexFile:
         docIndex = json.load(documentIndexFile)
 
     return docIndex
 
 #
-# This function takes all hte barrels generated form the forward index and adds them to the already existing barrels or
+# This function takes all the barrels generated form the forward index and adds them to the already existing barrels or
 # create new ones for them based on if they already exist in the Data Barrels
 #
 def generateBarrels(immediateBarrels):
@@ -122,7 +127,7 @@ def generateBarrels(immediateBarrels):
 
 
 #
-# This function takes all hte barrels generated form the forward index and adds them to the already existing barrels or
+# This function takes all the barrels generated form the short forward index and adds them to the already existing barrels or
 # create new ones for them based on if they already exist in the Data Barrels
 #
 def generateShortBarrels(immediateBarrels):
@@ -156,10 +161,6 @@ def generateIsIndexed(indexedDocs):
         pickle.dump(indexedDocs,isIndexedFile)     
           
 
-
-          
-
-
 #
 # Reading the file using pickle 
 #
@@ -171,8 +172,8 @@ def readIsIndexed():
 
 
 #
-# This function generates the pickle file which stores the list storing whether or not a certian docID has been indexed or not
-# It acesses the docIDs from the docIDs file 
+# This function generates the pickle file which stores the dictionary which ahs the docIDs and their corresponding domain rank and
+# calls the function to map the values to a certain range
 #
 def generateDomainRanks(ranks):
     try:
@@ -197,7 +198,10 @@ def readDomainRanks():
     with open(DOMAIN_RANK_PATH,"rb") as domainRanksFile:
         ranks = pickle.load(domainRanksFile)
     return ranks
-        
+
+#
+# Mapping the ranks between 1 and 100 based on a mathematical formula
+#       
 def mapRankValues(valMax,valMin,ranks):
     for docID,rank in ranks.items():
         rank = ((1 - 100)*(rank - valMin)/(valMax-valMin)) + 100

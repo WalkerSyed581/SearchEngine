@@ -20,6 +20,9 @@ from lexicon.lexicon import buildLexicon
 # This functions will read one barrel at the argument path
 #
 def readBarrels(path):
+    """
+    Reading all the forward barrels
+    """
     barrel = dict()
     with open(path,"r",encoding='utf-8') as forwardBarrel:
         barrel = json.load(forwardBarrel)
@@ -44,7 +47,7 @@ def parseDocument(lexicon,docID,tokens):
     forwardBarrels = dict()
 
     #
-    # This loop will assign all of the wordID in a document to its specific barrel
+    # This loop will assign all of the wordID in a document's text to its specific barrel
     #
     for token in filtered_tokens:
         wordID = lexicon[token]
@@ -79,6 +82,8 @@ def buildForwardIndex():
     except (FileNotFoundError, IOError):
         isIndexed = list()
 
+    
+    # Reading the file which has the information of document's domain ranks
     try:
         domainRanks = readDomainRanks()
     except (FileNotFoundError, IOError):
@@ -97,9 +102,11 @@ def buildForwardIndex():
             if docID in isIndexed:
                 continue
                             
+            # Getting the text tokens, title tokens and the rank of the document
             tokens = filter_and_tokenize_file(file)
             title_tokens = filter_and_tokenize_file(file,True)
             rank = filter_and_tokenize_file(file,False,True)
+
             #
             # This loop will assign all of the wordID in a document to its specific barrel
             #
@@ -122,7 +129,7 @@ def buildForwardIndex():
                     continue
 
              #
-            # This loop will assign all of the wordID in a document to its specific barrel
+            # This loop will assign all of the wordID in a document's title to its specific title barrel
             #
             for token in title_tokens:
                 wordID = lexicon[token]
@@ -149,10 +156,12 @@ def buildForwardIndex():
     # Storing the updated isIndexed file by passing in the list of documents that have been indexed
     generateIsIndexed(isIndexed)
 
+
+    # Storing the updated ranks file by passing in the list of document ranks
     generateDomainRanks(domainRanks)
 
 
-
+    # Generating short forward barrels containing title text
     generateShortBarrels(shortForwardBarrels)
 
 

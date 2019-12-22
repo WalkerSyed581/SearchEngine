@@ -5,6 +5,7 @@ in the project directory
 
 import os
 
+# Setting up the paths for the various file and directory paths
 
 DIRECTORY_PATH = os.path.abspath("Data")
 DATA_PATH = os.path.abspath("Data/sample_data")
@@ -18,10 +19,11 @@ IS_INDEXED_PATH = os.path.abspath("Data/miscStuff/isIndexed.pickle")
 DOMAIN_RANK_PATH = os.path.abspath("Data/miscStuff/domainRanks.pickle")
 LEXICON_PATH = os.path.abspath("Data/lexicon.json")
 
-
+# The capacity of individual barrels for all the various kinds of barrels
 BARRELS_CAPACITY = 16000
 
 
+# Making the directories if none of them exist before hadn
 def makePaths():
     try:
         os.stat(DIRECTORY_PATH)
