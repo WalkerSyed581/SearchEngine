@@ -44,6 +44,7 @@ def buildLexicon(docIndex):
                 if docID not in isIndexed:
                     # The function being called reads, tokenizes and stems the tokens along with other filters
                     filtered_tokens += filter_and_tokenize_file(file)
+                    filtered_tokens += filter_and_tokenize_file(file,title=True)
     
     # Removing duplicate words
     words = set(filtered_tokens)

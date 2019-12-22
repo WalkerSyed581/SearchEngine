@@ -13,7 +13,12 @@ from config import *
 
 
 if __name__ == "__main__":
-    #If there are no path for the data built then uncomment following line of code
-    #makePaths()
+    # If there are no path for the data built then uncomment following line of code and then add the json file sot the "Data/sample_data folder"
+    # makePaths()
+    files = list()
+    for (_,_,file) in os.walk(DATA_PATH):
+        file
+
+    if(files)
     forward_index.buildForwardIndex()
     inverted_index.buildInvertedIndex()

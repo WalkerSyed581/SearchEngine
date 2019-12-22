@@ -18,24 +18,38 @@ from nltk.stem import PorterStemmer
 #
 # This function will be used to parse each document of the datatset and converting it into tokens
 #
-def filter_and_tokenize_file(file):
+def filter_and_tokenize_file(file,title=False):
     text = ""
+    title = ""
     path = os.path.join(DATA_PATH,file)
     with open(path,"r",encoding='utf8') as f:
         data = json.loads(f.read())
         text += " " + data["text"]
+        title += " " + data["title"]
 
+    print(title)
     # Creating lemmatizing objects
     lemmatizer = WordNetLemmatizer()
     ps = PorterStemmer()
 
-    # Creating tokens and excluding punctuations
+    if title == True:
+        # Creating tokens and excluding punctuations
+        tokens = nltk.regexp_tokenize(title,r'\w+')
+
+        # Stemming tokens and discarding numbers along with tokens of single words
+        filtered_tokens = [ps.stem(lemmatizer.lemmatize(token.lower())) for token in tokens if not(len(token) <= 1) and not(token.isdigit())]
+
+        return filtered_tokens
+    
+    
     tokens = nltk.regexp_tokenize(text,r'\w+')
 
     # Stemming tokens and discarding numbers along with tokens of single words
     filtered_tokens = [ps.stem(lemmatizer.lemmatize(token.lower())) for token in tokens if not(len(token) <= 1) and not(token.isdigit())]
 
     return filtered_tokens
+    
+
 
 #
 # The following function generates the DocIDs for all of files in the dataset
@@ -91,6 +105,26 @@ def generateBarrels(immediateBarrels):
 
 
 #
+# This function takes all hte barrels generated form the forward index and adds them to the already existing barrels or
+# create new ones for them based on if they already exist in the Data Barrels
+#
+def generateShortBarrels(immediateBarrels):
+    for key,value in immediateBarrels.items():
+        shortForwardBarrel = dict()
+        try:
+            with open(os.path.join(SHORT_BARREL_PATH,"barrel{}.json".format(key)) ,"r",encoding='utf-8') as shortforwardBarrelFile:
+                shortForwardBarrel = json.load(shortforwardBarrelFile)
+        except (FileNotFoundError, IOError):
+            pass
+        
+        shortForwardBarrel.update(value)
+        with open(os.path.join(SHORT_BARREL_PATH,"barrel{}.json".format(key)) ,"w+",encoding='utf-8') as shortforwardBarrelFile:
+            shortForwardBarrel = json.dump(shortForwardBarrel,shortforwardBarrelFile)
+
+
+
+
+#
 # This function generates the pickle file which stores the list storing whether or not a certian docID has been indexed or not
 # It acesses the docIDs from the docIDs file 
 #
@@ -113,14 +147,3 @@ def readIsIndexed():
         isIndexed = pickle.load(isIndexedFile)
     return isIndexed
         
-#
-# This function takes all hte barrels generated form the inverted index and adds them to the already existing barrels or
-# create new ones for them based on if they already exist in the Data
-#
-def generateInvertedBarrels(immediateInvertedBarrels):
-    for key,value in immediateInvertedBarrels.items():
-        invertedBarrel = dict()
-        
-        invertedBarrel.update(value)
-        with open(os.path.join(INVERTED_BARREL_PATH,"barrel{}Inverted.json".format(key)) ,"w+",encoding='utf-8') as invertedBarrelFile:
-            json.dump(invertedBarrel,invertedBarrelFile)

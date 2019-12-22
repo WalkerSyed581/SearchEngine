@@ -39,9 +39,8 @@ def buildHitlist(word,document_tokens):
 #
 # This function will parse the document and create a single entry in the barrel specified through wordID
 #
-def parseDocument(document_path,lexicon,docID):
-    # Reading document
-    filtered_tokens = filter_and_tokenize_file(document_path)
+def parseDocument(lexicon,docID,tokens):
+    filtered_tokens = tokens
     forwardBarrels = dict()
 
     #
@@ -83,6 +82,7 @@ def buildForwardIndex():
 
 
     forwardBarrels = dict()
+    shortForwardBarrels = dict()
 
     # Walking through the dataset and created barrels based on its words
     for (_,_,files) in os.walk(DATA_PATH):
@@ -93,14 +93,21 @@ def buildForwardIndex():
             if docID in isIndexed:
                 continue
             
-            forwardBarrels = parseDocument(path,lexicon,docID)
+            tokens = filter_and_tokenize_file(file)
+            title_tokens = filter_and_tokenize_file(file,title=True)
+            forwardBarrels = parseDocument(lexicon,docID,tokens)
+            shortForwardBarrels = parseDocument(lexicon,docID,title_tokens)
             isIndexed.append(docID)
 
     # Storing the updated isIndexed file by passing in the list of documents that have been indexed
     generateIsIndexed(isIndexed)
 
+    generateShortBarrels(shortForwardBarrels)
+
+
     # Parsing the dictionary of barrels into their specified files by using this function
     generateBarrels(forwardBarrels)
+
 
     
 

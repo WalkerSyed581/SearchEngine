@@ -9,7 +9,9 @@ import os
 DIRECTORY_PATH = os.path.abspath("Data")
 DATA_PATH = os.path.abspath("Data/sample_data")
 BARREL_PATH = os.path.abspath("Data/barrels")
+SHORT_BARREL_PATH = os.path.abspath("Data/shortBarrels")
 INVERTED_BARREL_PATH = os.path.abspath("Data/invertedBarrels")
+SHORT_INVERTED_BARREL_PATH = os.path.abspath("Data/shortInvertedBarrels")
 MISC_STUFF = os.path.abspath("Data/miscStuff")
 DOC_INDEX_PATH = os.path.abspath("Data/miscStuff/documentIndex.json")
 IS_INDEXED_PATH = os.path.abspath("Data/miscStuff/isIndexed.pickle")
@@ -36,9 +38,19 @@ def makePaths():
         os.mkdir(BARREL_PATH)
 
     try:
+        os.stat(SHORT_BARREL_PATH)
+    except:
+        os.mkdir(SHORT_BARREL_PATH)
+
+    try:
         os.stat(INVERTED_BARREL_PATH)
     except:
         os.mkdir(INVERTED_BARREL_PATH)
+
+    try:
+        os.stat(SHORT_INVERTED_BARREL_PATH)
+    except:
+        os.mkdir(SHORT_INVERTED_BARREL_PATH)
 
     try:
         os.stat(MISC_STUFF)

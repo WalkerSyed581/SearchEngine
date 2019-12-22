@@ -28,8 +28,33 @@ def createInvertedBarrel(forwardBarrel):
 # This function will read the forward barrels and create the inverted barrels
 def buildInvertedIndex():
     invertedBarrels = dict()
+    shortInvertedBarrels = dict()
 
     barrelNum = 0
+
+    
+
+    # Walking through the forward barrels and creating inverted barrels by passing it to the above function
+    for (_,_,files) in os.walk(SHORT_BARREL_PATH):
+            for file in files:
+                path = os.path.join(SHORT_BARREL_PATH,file)
+                try:
+                    shortInvertedBarrels[barrelNum] = readBarrels(path)
+                # If no forward barrel index for this barrel number, we ignore that number
+                except (FileNotFoundError, IOError):
+                    shortInvertedBarrels[barrelNum] = dict()
+                    continue
+                
+                shortInvertedBarrels[barrelNum] = createInvertedBarrel(shortInvertedBarrels[barrelNum])
+                barrelNum += 1
+
+    for key,value in shortInvertedBarrels.items():
+        with open(os.path.join(SHORT_INVERTED_BARREL_PATH,"barrel{}Inverted.json".format(key)) ,"w+",encoding='utf-8') as shortInvertedBarrelFile:
+            json.dump(value,shortInvertedBarrelFile)
+
+
+    barrelNum = 0
+
     # Walking through the forward barrels and creating inverted barrels by passing it to the above function
     for (_,_,files) in os.walk(BARREL_PATH):
             for file in files:
@@ -43,6 +68,7 @@ def buildInvertedIndex():
                 
                 invertedBarrels[barrelNum] = createInvertedBarrel(invertedBarrels[barrelNum])
                 barrelNum += 1
-
-    # Passing all the barrels to this functions which writes all of them to memory
-    generateInvertedBarrels(invertedBarrels)
+    
+    for key,value in invertedBarrels.items():
+        with open(os.path.join(INVERTED_BARREL_PATH,"barrel{}Inverted.json".format(key)) ,"w+",encoding='utf-8') as invertedBarrelFile:
+            json.dump(value,invertedBarrelFile)
