@@ -15,10 +15,25 @@ from config import *
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 
+
+def tokenizeString(words):
+    lemmatizer = WordNetLemmatizer()
+    ps = PorterStemmer()
+
+    # Creating tokens and excluding punctuations
+    tokens = nltk.regexp_tokenize(words,r'\w+')
+
+    # Stemming tokens and discarding numbers along with tokens of single words
+    filtered_tokens = [ps.stem(lemmatizer.lemmatize(token.lower())) for token in tokens if not(len(token) <= 1) and not(token.isdigit())]
+
+    return filtered_tokens
+
+
+
 #
 # This function will be used to parse each document of the datatset and converting it into tokens
 #
-def filter_and_tokenize_file(file,title=False):
+def filter_and_tokenize_file(file,titleRequired=False,rank=False):
     text = ""
     title = ""
     path = os.path.join(DATA_PATH,file)
@@ -27,12 +42,14 @@ def filter_and_tokenize_file(file,title=False):
         text += " " + data["text"]
         title += " " + data["title"]
 
-    print(title)
     # Creating lemmatizing objects
     lemmatizer = WordNetLemmatizer()
     ps = PorterStemmer()
 
-    if title == True:
+    if rank == True:
+        return data["thread"]["domain_rank"]
+
+    if titleRequired == True:
         # Creating tokens and excluding punctuations
         tokens = nltk.regexp_tokenize(title,r'\w+')
 
@@ -41,13 +58,13 @@ def filter_and_tokenize_file(file,title=False):
 
         return filtered_tokens
     
-    
-    tokens = nltk.regexp_tokenize(text,r'\w+')
+    else:     
+        tokens = nltk.regexp_tokenize(text,r'\w+')
 
-    # Stemming tokens and discarding numbers along with tokens of single words
-    filtered_tokens = [ps.stem(lemmatizer.lemmatize(token.lower())) for token in tokens if not(len(token) <= 1) and not(token.isdigit())]
+        # Stemming tokens and discarding numbers along with tokens of single words
+        filtered_tokens = [ps.stem(lemmatizer.lemmatize(token.lower())) for token in tokens if not(len(token) <= 1) and not(token.isdigit())]
 
-    return filtered_tokens
+        return filtered_tokens
     
 
 
@@ -139,6 +156,10 @@ def generateIsIndexed(indexedDocs):
         pickle.dump(indexedDocs,isIndexedFile)     
           
 
+
+          
+
+
 #
 # Reading the file using pickle 
 #
@@ -147,3 +168,37 @@ def readIsIndexed():
         isIndexed = pickle.load(isIndexedFile)
     return isIndexed
         
+
+
+#
+# This function generates the pickle file which stores the list storing whether or not a certian docID has been indexed or not
+# It acesses the docIDs from the docIDs file 
+#
+def generateDomainRanks(ranks):
+    try:
+        ranks.update(readDomainRanks())
+    except (FileNotFoundError, IOError):
+        pass
+
+
+    key_max = max(ranks.keys(), key=(lambda k: ranks[k]))
+    key_min = min(ranks.keys(), key=(lambda k: ranks[k]))
+
+    ranks = mapRankValues(ranks[key_max],ranks[key_min],ranks)
+    
+    with open(DOMAIN_RANK_PATH,"wb+") as domainRanksFile:
+        pickle.dump(ranks,domainRanksFile)     
+
+
+#
+# Reading the file using pickle 
+#
+def readDomainRanks():
+    with open(DOMAIN_RANK_PATH,"rb") as domainRanksFile:
+        ranks = pickle.load(domainRanksFile)
+    return ranks
+        
+def mapRankValues(valMax,valMin,ranks):
+    for docID,rank in ranks.items():
+        rank = ((1 - 100)*(rank - valMin)/(valMax-valMin)) + 100
+    return ranks

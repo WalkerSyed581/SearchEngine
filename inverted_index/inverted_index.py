@@ -13,6 +13,21 @@ from misc_functions import *
 import forward_index.forward_index
 from forward_index.forward_index import readBarrels
 
+
+def readInvertedBarrels(barrel_id,short=False):
+    barrel = dict()
+    barrel_path = ""
+    if short==False:
+        barrel_path = os.path.join(INVERTED_BARREL_PATH, "barrel{}Inverted.json".format(barrel_id))
+    else:
+        barrel_path = os.path.join(SHORT_INVERTED_BARREL_PATH, "barrel{}Inverted.json".format(barrel_id))
+
+
+    with open(barrel_path,"r",encoding='utf-8') as invertedBarrel:
+        barrel = json.load(invertedBarrel)
+
+    return barrel
+
 # This functions creates and inverted barrel from the given forward barrel by using the memory trade-off
 def createInvertedBarrel(forwardBarrel):
     invertedBarrel = dict()
@@ -29,6 +44,8 @@ def createInvertedBarrel(forwardBarrel):
 def buildInvertedIndex():
     invertedBarrels = dict()
     shortInvertedBarrels = dict()
+    forwardBarrels = dict()
+    shortForwardBarrels = dict()
 
     barrelNum = 0
 
@@ -39,13 +56,15 @@ def buildInvertedIndex():
             for file in files:
                 path = os.path.join(SHORT_BARREL_PATH,file)
                 try:
-                    shortInvertedBarrels[barrelNum] = readBarrels(path)
+                    shortForwardBarrels[barrelNum] = readBarrels(path)
                 # If no forward barrel index for this barrel number, we ignore that number
                 except (FileNotFoundError, IOError):
-                    shortInvertedBarrels[barrelNum] = dict()
+                    shortForwardBarrels[barrelNum] = dict()
                     continue
                 
-                shortInvertedBarrels[barrelNum] = createInvertedBarrel(shortInvertedBarrels[barrelNum])
+
+
+                shortInvertedBarrels[barrelNum] = createInvertedBarrel(shortForwardBarrels[barrelNum])
                 barrelNum += 1
 
     for key,value in shortInvertedBarrels.items():
@@ -60,13 +79,13 @@ def buildInvertedIndex():
             for file in files:
                 path = os.path.join(BARREL_PATH,file)
                 try:
-                    invertedBarrels[barrelNum] = readBarrels(path)
+                    forwardBarrels[barrelNum] = readBarrels(path)
                 # If no forward barrel index for this barrel number, we ignore that number
                 except (FileNotFoundError, IOError):
-                    invertedBarrels[barrelNum] = dict()
+                    forwardBarrels[barrelNum] = dict()
                     continue
                 
-                invertedBarrels[barrelNum] = createInvertedBarrel(invertedBarrels[barrelNum])
+                invertedBarrels[barrelNum] = createInvertedBarrel(forwardBarrels[barrelNum])
                 barrelNum += 1
     
     for key,value in invertedBarrels.items():

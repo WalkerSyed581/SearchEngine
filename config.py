@@ -15,6 +15,7 @@ SHORT_INVERTED_BARREL_PATH = os.path.abspath("Data/shortInvertedBarrels")
 MISC_STUFF = os.path.abspath("Data/miscStuff")
 DOC_INDEX_PATH = os.path.abspath("Data/miscStuff/documentIndex.json")
 IS_INDEXED_PATH = os.path.abspath("Data/miscStuff/isIndexed.pickle")
+DOMAIN_RANK_PATH = os.path.abspath("Data/miscStuff/domainRanks.pickle")
 LEXICON_PATH = os.path.abspath("Data/lexicon.json")
 
 
