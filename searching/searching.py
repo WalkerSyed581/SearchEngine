@@ -11,6 +11,9 @@ from inverted_index.inverted_index import *
 
 from forward_index.forward_index import *
 
+from django import forms
+from django.shortcuts import redirect
+
 # Importing the stemmig libraries
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
@@ -80,7 +83,8 @@ class Searching():
 	def singleWordQuery(self,word):
 		wordID = self.lexicon.get(word)
 		if wordID == None:
-			raise Exception("\'{}\' not found".format(word))
+			raise Exception
+			
 
 		
 		barrelNum = int(wordID/BARRELS_CAPACITY)   

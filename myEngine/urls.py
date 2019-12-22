@@ -7,5 +7,6 @@ app_name = 'myEngine'
 urlpatterns = [
 
     path('', views.index, name='index'),
+    path('buildIndex',views.buildIndex,name="buildIndex"),
 
 ]
