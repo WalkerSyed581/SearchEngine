@@ -14,7 +14,7 @@ from forward_index.forward_index import *
 from django import forms
 from django.shortcuts import redirect
 
-# Importing the stemmig libraries
+# Importing the stemming libraries
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 
@@ -144,11 +144,29 @@ class Searching():
 
 		# Calling different functions based on the length of the query
 		if len(words) == 1:
-			ranked_results = self.singleWordQuery(words[0])
-			tempResults = self.getResults(ranked_results.keys())
+			# Sorting the results based on rank
+			ranked_results = bidict(self.singleWordQuery(words[0]))
+			tempListValues = list(ranked_results.values())
+			tempListValues.sort(reverse=True)
+			tempListKeys = list()
+		
+			for tempListValue in tempListValues:
+				tempListKeys.append(ranked_results.inverse[tempListValue])
+			
+			
+			tempResults = self.getResults(tempListKeys)
+			
 		elif len(words) > 1:
-			ranked_results = self.multiWordQuery(words)
-			tempResults = self.getResults(ranked_results.keys())
+			# Sorting the results based on rank
+			ranked_results = bidict(self.multiWordQuery(words))
+			tempListValues = list(ranked_results.values())
+			tempListValues.sort(reverse=True)
+			tempListKeys = list()
+			for tempListValue in tempListValues:
+				tempListKeys.append(ranked_results.inverse[tempListValue])
+			
+			tempResults = self.getResults(tempListKeys)
+
 		else:
 			raise Exception("Enter Valid Query")
 

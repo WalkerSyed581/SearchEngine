@@ -57,11 +57,9 @@ def buildLexicon(docIndex):
         lexiconf = dict()
 
     # Assigning wordIDs to words
-    index = 0
     for word in words:
         if lexiconf.get(word) == None:
-            lexiconf[word] = index
-        index += 1
+            lexiconf[word] = len(lexiconf)
 
     #Storing the lexicon and returning it
     with open(LEXICON_PATH,"w+",encoding='utf-8') as lex:

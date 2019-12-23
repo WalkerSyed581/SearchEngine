@@ -25,6 +25,8 @@ def index(request):
             if form.is_valid():
                 files = list()
                 makePaths()
+                buildForwardIndex()
+                buildInvertedIndex()
                 searcher = Searching()
                 # Dealing with the exception when the queried word is not found in the lexicon
                 try:

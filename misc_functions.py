@@ -185,24 +185,25 @@ def generateDomainRanks(ranks):
     key_max = max(ranks.keys(), key=(lambda k: ranks[k]))
     key_min = min(ranks.keys(), key=(lambda k: ranks[k]))
 
+
     ranks = mapRankValues(ranks[key_max],ranks[key_min],ranks)
     
-    with open(DOMAIN_RANK_PATH,"wb+") as domainRanksFile:
-        pickle.dump(ranks,domainRanksFile)     
+    with open(DOMAIN_RANK_PATH,"w+") as domainRanksFile:
+        json.dump(ranks,domainRanksFile)     
 
 
 #
 # Reading the file using pickle 
 #
 def readDomainRanks():
-    with open(DOMAIN_RANK_PATH,"rb") as domainRanksFile:
-        ranks = pickle.load(domainRanksFile)
+    with open(DOMAIN_RANK_PATH,"r") as domainRanksFile:
+        ranks = json.load(domainRanksFile)
     return ranks
 
 #
 # Mapping the ranks between 1 and 100 based on a mathematical formula
 #       
 def mapRankValues(valMax,valMin,ranks):
-    for docID,rank in ranks.items():
-        rank = ((1 - 100)*(rank - valMin)/(valMax-valMin)) + 100
+    for docID in ranks.keys():
+        ranks[docID] = ((1 - 100)*(ranks[docID] - valMin)/(valMax-valMin)) + 100
     return ranks
