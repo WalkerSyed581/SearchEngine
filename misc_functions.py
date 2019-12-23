@@ -37,6 +37,7 @@ def filter_and_tokenize_file(file,titleRequired=False,rank=False):
     text = ""
     title = ""
     path = os.path.join(DATA_PATH,file)
+    data = dict()
     with open(path,"r",encoding='utf8') as f:
         data = json.loads(f.read())
         text += " " + data["text"]
@@ -48,7 +49,11 @@ def filter_and_tokenize_file(file,titleRequired=False,rank=False):
 
     # Returning the rank of the document if required
     if rank == True:
-        return data["thread"]["domain_rank"]
+        try:
+            print(data["thread"]["domain_rank"])
+            return data["thread"]["domain_rank"]
+        except:
+            return 0
 
     # Checking if the title tokens were asked for
     if titleRequired == True:
@@ -61,7 +66,7 @@ def filter_and_tokenize_file(file,titleRequired=False,rank=False):
         return filtered_tokens
     
     # Returning the text tokens if nothing was specified
-    else:     
+    elif titleRequired == False and rank == False:     
         tokens = nltk.regexp_tokenize(text,r'\w+')
 
         # Stemming tokens and discarding numbers along with tokens of single words
@@ -181,7 +186,7 @@ def generateDomainRanks(ranks):
     except (FileNotFoundError, IOError):
         pass
 
-
+    print(ranks)
     key_max = max(ranks.keys(), key=(lambda k: ranks[k]))
     key_min = min(ranks.keys(), key=(lambda k: ranks[k]))
 

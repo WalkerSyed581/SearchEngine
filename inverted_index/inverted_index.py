@@ -65,6 +65,7 @@ def buildInvertedIndex():
                 # If no forward barrel index for this barrel number, we ignore that number
                 except (FileNotFoundError, IOError):
                     shortForwardBarrels[barrelNum] = dict()
+                    barrelNum += 1
                     continue
                 
 
@@ -89,6 +90,7 @@ def buildInvertedIndex():
                 # If no forward barrel index for this barrel number, we ignore that number
                 except (FileNotFoundError, IOError):
                     forwardBarrels[barrelNum] = dict()
+                    barrelNum += 1
                     continue
                 
                 # Creating the inverted barrel from the forward barrel

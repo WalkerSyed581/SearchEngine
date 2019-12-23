@@ -59,6 +59,7 @@ def buildIndex(request):
                 context = {"form":form,"results":results}
     else:
         # Only change from the above function is that we are calling the following two functions
+        makePaths()
         buildForwardIndex()
         buildInvertedIndex()
         form = SearchEngine()

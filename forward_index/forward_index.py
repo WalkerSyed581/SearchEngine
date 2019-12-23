@@ -39,34 +39,6 @@ def buildHitlist(word,document_tokens):
 
     return positions
 
-#
-# This function will parse the document and create a single entry in the barrel specified through wordID
-#
-def parseDocument(lexicon,docID,tokens):
-    filtered_tokens = tokens
-    forwardBarrels = dict()
-
-    #
-    # This loop will assign all of the wordID in a document's text to its specific barrel
-    #
-    for token in filtered_tokens:
-        wordID = lexicon[token]
-        barrelNumber = int(wordID/BARRELS_CAPACITY)
-        positions = buildHitlist(token,filtered_tokens)
-
-        # Following code checks if the specified entries exist in the barrel or not and intializes them
-        if forwardBarrels.get(barrelNumber) == None:
-            forwardBarrels[barrelNumber] = dict()
-
-        if forwardBarrels[barrelNumber].get(docID) == None:
-            forwardBarrels[barrelNumber][docID] =  dict()
-        
-        #Assigning positions and discarding repetitions of the same wordID
-        if forwardBarrels[barrelNumber][docID].get(wordID) == None:
-            forwardBarrels[barrelNumber][docID][wordID] = positions
-        else:
-            continue
-    return forwardBarrels
 
 #
 # This is the driving function which runs the above functions in order to create the forward index
